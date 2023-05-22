@@ -149,6 +149,7 @@ const PaintbrushApp: React.FC = () => {
         setSelectedColor={setSelectedColor}
         selectedColor={selectedColor}
       />
+      <a href="https://github.com/ilyashusterman/paintbrush">Github</a>
     </div>
   );
 };

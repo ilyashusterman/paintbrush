@@ -35,7 +35,7 @@ const PaintbrushApp: React.FC = () => {
       updatedPixels[row][col].color = selectedColor;
       setPixels(updatedPixels);
     } else if (mode === "fill") {
-      const updatedPixels = floodFill(
+      const updatedPixels = boundaryFill(
         [...pixels],
         row,
         col,
@@ -52,7 +52,7 @@ const PaintbrushApp: React.FC = () => {
   }
 
   // Perform flood-fill on the pixels array
-  function floodFill(
+  function boundaryFill(
     matrix: Pixel[][],
     rowIndex: number,
     colIndex: number,
@@ -67,53 +67,48 @@ const PaintbrushApp: React.FC = () => {
       rowIndex >= numRows ||
       colIndex < 0 ||
       colIndex >= numCols ||
+      matrix[rowIndex][colIndex].color === fillColor ||
       matrix[rowIndex][colIndex].color !== targetColor
     ) {
       return matrix;
     }
 
+    const newMatrix = matrix.map((row) => [...row]);
+
     const stack: [number, number][] = [[rowIndex, colIndex]];
-    let minRow = rowIndex;
-    let maxRow = rowIndex;
-    let minCol = colIndex;
-    let maxCol = colIndex;
+
+    const directions: [number, number][] = [
+      [-1, 0], // Up
+      [1, 0], // Down
+      [0, -1], // Left
+      [0, 1], // Right
+    ];
+
+    const isInsideMatrix = (row: number, col: number): boolean => {
+      return row >= 0 && row < numRows && col >= 0 && col < numCols;
+    };
 
     while (stack.length > 0) {
       const [row, col] = stack.pop()!;
 
-      if (
-        row < 0 ||
-        row >= numRows ||
-        col < 0 ||
-        col >= numCols ||
-        matrix[row][col].color !== targetColor
-      ) {
+      if (newMatrix[row][col].color !== targetColor) {
         continue;
       }
 
-      matrix[row][col].color = fillColor;
+      newMatrix[row][col].color = fillColor;
 
-      if (row < minRow) minRow = row;
-      if (row > maxRow) maxRow = row;
-      if (col < minCol) minCol = col;
-      if (col > maxCol) maxCol = col;
+      for (const [dx, dy] of directions) {
+        const newRow = row + dx;
+        const newCol = col + dy;
 
-      stack.push([row - 1, col]); // Up
-      stack.push([row + 1, col]); // Down
-      stack.push([row, col - 1]); // Left
-      stack.push([row, col + 1]); // Right
-    }
-
-    // Optimize: Iterate only within the boundary of the filled region
-    for (let r = minRow; r <= maxRow; r++) {
-      for (let c = minCol; c <= maxCol; c++) {
-        matrix[r][c].color = fillColor;
+        if (isInsideMatrix(newRow, newCol)) {
+          stack.push([newRow, newCol]);
+        }
       }
     }
 
-    return matrix;
+    return newMatrix;
   }
-
   return (
     <div>
       <h1>Paintbrush App</h1>

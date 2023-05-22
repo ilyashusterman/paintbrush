@@ -1,0 +1,27 @@
+.color-picker {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    border-radius: 50%;
+    transition: background-color 0.3s ease-in-out;
+  }
+  
+  .color-picker-dark {
+    background-color: #000000;
+  }
+  
+  .color-picker-light {
+    background-color: #ffffff;
+  }
+  
+  .color-picker-input {
+    width: 30px;
+    height: 30px;
+    appearance: none;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    background-color: transparent;
+  }
+  

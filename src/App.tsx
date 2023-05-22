@@ -59,6 +59,7 @@ const PaintbrushApp: React.FC = () => {
     targetColor: string,
     fillColor: string
   ): Pixel[][] {
+    console.log("boundaryFill");
     const numRows = matrix.length;
     const numCols = matrix[0].length;
 
@@ -74,15 +75,11 @@ const PaintbrushApp: React.FC = () => {
     }
 
     const newMatrix = matrix.map((row) => [...row]);
+    const visited: boolean[][] = new Array(numRows)
+      .fill(false)
+      .map(() => new Array(numCols).fill(false));
 
     const stack: [number, number][] = [[rowIndex, colIndex]];
-
-    const directions: [number, number][] = [
-      [-1, 0], // Up
-      [1, 0], // Down
-      [0, -1], // Left
-      [0, 1], // Right
-    ];
 
     const isInsideMatrix = (row: number, col: number): boolean => {
       return row >= 0 && row < numRows && col >= 0 && col < numCols;
@@ -91,24 +88,24 @@ const PaintbrushApp: React.FC = () => {
     while (stack.length > 0) {
       const [row, col] = stack.pop()!;
 
-      if (newMatrix[row][col].color !== targetColor) {
-        continue;
-      }
+      if (
+        isInsideMatrix(row, col) &&
+        !visited[row][col] &&
+        newMatrix[row][col].color === targetColor
+      ) {
+        visited[row][col] = true;
+        newMatrix[row][col].color = fillColor;
 
-      newMatrix[row][col].color = fillColor;
-
-      for (const [dx, dy] of directions) {
-        const newRow = row + dx;
-        const newCol = col + dy;
-
-        if (isInsideMatrix(newRow, newCol)) {
-          stack.push([newRow, newCol]);
-        }
+        stack.push([row - 1, col]); // Up
+        stack.push([row + 1, col]); // Down
+        stack.push([row, col - 1]); // Left
+        stack.push([row, col + 1]); // Right
       }
     }
 
     return newMatrix;
   }
+
   return (
     <div>
       <h1>Paintbrush App</h1>

@@ -14,6 +14,26 @@ const PaintbrushApp: React.FC = () => {
   const [selectedColor, setSelectedColor] = useState("#000000");
   const [pixels, setPixels] = useState<Pixel[][]>(initializePixels());
   const [mode, setMode] = useState<string>("brush");
+  const [isMouseClicked, setIsMouseClicked] = useState<string>("brush");
+
+  function handleMouseMove(event: MouseEvent, row: number, col: number) {
+    if (event.buttons === 1) {
+      if (mode === "brush") {
+        const updatedPixels = [...pixels];
+        updatedPixels[row][col].color = selectedColor;
+        setPixels(updatedPixels);
+      } else if (mode === "fill") {
+        const updatedPixels = boundaryFill(
+          [...pixels],
+          row,
+          col,
+          pixels[row][col].color,
+          selectedColor
+        );
+        setPixels(updatedPixels);
+      }
+    }
+  }
 
   // Initialize the pixels array with white color
   function initializePixels(): Pixel[][] {
@@ -126,6 +146,7 @@ const PaintbrushApp: React.FC = () => {
                 border: "1px solid black",
               }}
               onClick={() => handlePixelClick(pixel.row, pixel.col)}
+              onMouseMove={(e) => handleMouseMove(e, pixel.row, pixel.col)}
             />
           ))
         )}

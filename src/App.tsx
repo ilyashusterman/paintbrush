@@ -14,9 +14,8 @@ const PaintbrushApp: React.FC = () => {
   const [selectedColor, setSelectedColor] = useState("#000000");
   const [pixels, setPixels] = useState<Pixel[][]>(initializePixels());
   const [mode, setMode] = useState<string>("brush");
-  const [isMouseClicked, setIsMouseClicked] = useState<string>("brush");
 
-  function handleMouseMove(event: MouseEvent, row: number, col: number) {
+  function handleMouseMove(event: any, row: number, col: number) {
     if (event.buttons === 1) {
       if (mode === "brush") {
         const updatedPixels = [...pixels];
